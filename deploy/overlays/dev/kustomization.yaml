@@ -1,25 +1,26 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
+components:
+- ../../components/ingress
 configMapGenerator:
-- name: frontend-service-configmap
+- behavior: merge
   envs:
   - .env
-  behavior: merge
+  name: frontend-service-configmap
+images:
+- name: me-west1-docker.pkg.dev/koala-ops-demo-373407/koala-repo/frontend-service
 kind: Kustomization
 labels:
 - pairs:
-    app.kubernetes.io/version: 
+    app.kubernetes.io/version: ""
 namePrefix: dev-
 namespace: dev
 patches:
 - path: ingress-patch.yaml
   target:
     kind: Ingress
+- path: deployment-add-service-secrets-patch.yaml
+  target:
+    kind: Deployment
 resources:
-  - ../../base
-
-components:
-  - ../../components/ingress
-
-images:
-- name: me-west1-docker.pkg.dev/koala-ops-demo-373407/koala-repo/frontend-service
-  newTag: 
+- ../../base
+- service-secrets.yaml
